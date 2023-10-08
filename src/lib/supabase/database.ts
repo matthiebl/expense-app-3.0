@@ -3,7 +3,33 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export interface Database {
     public: {
         Tables: {
-            [_ in never]: never
+            users: {
+                Row: {
+                    created_at: string
+                    email: string
+                    firstname: string
+                    fullname: string
+                    id: string
+                    lastname: string
+                }
+                Insert: {
+                    created_at?: string
+                    email: string
+                    firstname: string
+                    fullname?: string
+                    id?: string
+                    lastname: string
+                }
+                Update: {
+                    created_at?: string
+                    email?: string
+                    firstname?: string
+                    fullname?: string
+                    id?: string
+                    lastname?: string
+                }
+                Relationships: []
+            }
         }
         Views: {
             [_ in never]: never
