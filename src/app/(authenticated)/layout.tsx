@@ -1,6 +1,20 @@
+import { cookies } from 'next/headers'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { Database } from '@/lib/supabase/database'
 import { Navigation } from '@/components/Navigation'
+import { redirect } from 'next/navigation'
 
-export default function SidebarLayout({ children }: { children: React.ReactNode }) {
+export const dynamic = 'force-dynamic'
+
+export default async function SidebarLayout({ children }: { children: React.ReactNode }) {
+    const supabase = createServerComponentClient<Database>({ cookies })
+
+    const { error } = await supabase.auth.getUser()
+    if (error) {
+        console.error('Not logged in')
+        redirect('/')
+    }
+
     return (
         <>
             <Navigation />

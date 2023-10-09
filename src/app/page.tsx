@@ -1,6 +1,16 @@
 import Link from 'next/link'
+import { cookies } from 'next/headers'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { Database } from '@/lib/supabase/database'
 
-export default function Hero() {
+export const dynamic = 'force-dynamic'
+
+export default async function Hero() {
+    const supabase = createServerComponentClient<Database>({ cookies })
+
+    const { error } = await supabase.auth.getUser()
+    const authed = !error
+
     return (
         <div className='relative isolate overflow-hidden bg-slate-900'>
             <svg
@@ -59,15 +69,29 @@ export default function Hero() {
                         No matter where you are, keep your expenses in track!
                     </p>
                     <div className='mt-10 flex items-center gap-x-6'>
-                        <Link
-                            href='/login'
-                            className='rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400'
-                        >
-                            Log back in
-                        </Link>
-                        <Link href='/signup' className='text-sm font-semibold leading-6 text-white'>
-                            Create an account <span aria-hidden='true'>→</span>
-                        </Link>
+                        {authed ? (
+                            <Link
+                                href='/dashboard'
+                                className='rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400'
+                            >
+                                Head to dashboard
+                            </Link>
+                        ) : (
+                            <>
+                                <Link
+                                    href='/login'
+                                    className='rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400'
+                                >
+                                    Log back in
+                                </Link>
+                                <Link
+                                    href='/signup'
+                                    className='text-sm font-semibold leading-6 text-white'
+                                >
+                                    Create an account <span aria-hidden='true'>→</span>
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
                 <div className='mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32'>
