@@ -1,6 +1,6 @@
 import { classNames } from '@/lib/classes'
 import { navigation } from '.'
-import { DesktopProfile } from './Profile'
+import { Profile } from './Profile'
 
 export function NavMenu({ desktop = false }: { desktop?: boolean }) {
     return (
@@ -37,11 +37,9 @@ export function NavMenu({ desktop = false }: { desktop?: boolean }) {
                             ))}
                         </ul>
                     </li>
-                    {desktop && (
-                        <li className='-mx-6 mt-auto'>
-                            <DesktopProfile />
-                        </li>
-                    )}
+                    <li className='-mx-6 mt-auto'>
+                        <Profile />
+                    </li>
                 </ul>
             </nav>
         </>
