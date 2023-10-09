@@ -1,8 +1,13 @@
 'use client'
 
-import { FormEvent } from 'react'
+import { FormEvent, useState } from 'react'
 
 export function SignupForm() {
+    const [firstname, setFirstname] = useState('')
+    const [lastname, setLastname] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+
     async function onRegister(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
     }
@@ -23,6 +28,8 @@ export function SignupForm() {
                             name='firstname'
                             type='text'
                             required
+                            value={firstname}
+                            onChange={e => setFirstname(e.target.value)}
                             className='block w-full rounded-md border-0 bg-white/5 px-2.5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6'
                         />
                     </div>
@@ -41,6 +48,8 @@ export function SignupForm() {
                             name='lastname'
                             type='text'
                             required
+                            value={lastname}
+                            onChange={e => setLastname(e.target.value)}
                             className='block w-full rounded-md border-0 bg-white/5 px-2.5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6'
                         />
                     </div>
@@ -58,6 +67,8 @@ export function SignupForm() {
                         type='email'
                         autoComplete='email'
                         required
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
                         className='block w-full rounded-md border-0 bg-white/5 px-2.5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6'
                     />
                 </div>
@@ -84,6 +95,8 @@ export function SignupForm() {
                         type='password'
                         autoComplete='current-password'
                         required
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
                         className='block w-full rounded-md border-0 bg-white/5 px-2.5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6'
                     />
                 </div>
