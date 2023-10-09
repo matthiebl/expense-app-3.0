@@ -4,7 +4,6 @@ import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { NavMenu } from './NavMenu'
-import { NavProfile } from './Profile'
 
 export function Navigation() {
     const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -89,7 +88,6 @@ export function Navigation() {
                     <Bars3Icon className='h-6 w-6' aria-hidden='true' />
                 </button>
                 <div className='flex-1 text-sm font-semibold leading-6 text-white'>Dashboard</div>
-                <NavProfile />
             </div>
         </>
     )
