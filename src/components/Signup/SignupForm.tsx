@@ -1,8 +1,14 @@
 'use client'
 
 import { FormEvent, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { Database } from '@/lib/supabase/database'
 
 export function SignupForm() {
+    const router = useRouter()
+    const supabase = createClientComponentClient<Database>()
+
     const [firstname, setFirstname] = useState('')
     const [lastname, setLastname] = useState('')
     const [email, setEmail] = useState('')
@@ -10,6 +16,28 @@ export function SignupForm() {
 
     async function onRegister(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
+
+        const { error: registerError } = await supabase.auth.signUp({
+            email,
+            password,
+        })
+        if (registerError) {
+            console.error(`Failed to signup: ${registerError.message}`)
+            return
+        }
+
+        const { error } = await supabase.from('users').insert({
+            email,
+            firstname,
+            lastname,
+            fullname: firstname + ' ' + lastname,
+        })
+        if (error) {
+            console.error(`Failed to add user entry: ${error.message}`)
+            return
+        }
+
+        router.push('/dashboard')
     }
 
     return (
@@ -95,11 +123,15 @@ export function SignupForm() {
                         type='password'
                         autoComplete='current-password'
                         required
+                        pattern='.{8,}'
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                         className='block w-full rounded-md border-0 bg-white/5 px-2.5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6'
                     />
                 </div>
+                <p className='mt-2 text-sm text-gray-500' id='email-description'>
+                    Password must be at least 8 characters.
+                </p>
             </div>
 
             <div>
