@@ -5,13 +5,13 @@ import { Navigation } from '@/components/Navigation'
 import { redirect } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default async function SidebarLayout({ children }: { children: React.ReactNode }) {
     const supabase = createServerComponentClient<Database>({ cookies })
 
     const { error } = await supabase.auth.getUser()
     if (error) {
-        console.error('Not logged in')
         redirect('/')
     }
 

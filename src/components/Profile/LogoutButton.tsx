@@ -4,6 +4,7 @@ import { Database } from '@/lib/supabase/database'
 import { ArrowLeftOnRectangleIcon } from '@heroicons/react/20/solid'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
+import { toastError } from '../Toasts'
 
 export function LogoutButton() {
     const router = useRouter()
@@ -12,7 +13,7 @@ export function LogoutButton() {
     async function onLogout() {
         const { error } = await supabase.auth.signOut()
         if (error) {
-            console.error(`Unable to logout: ${error.message}`)
+            toastError(`Unable to logout`, error.message)
             return
         }
         router.push('/')
