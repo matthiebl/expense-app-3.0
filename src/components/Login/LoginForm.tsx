@@ -4,6 +4,7 @@ import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from '@/lib/supabase/database'
+import { toastError, toastSuccess } from '../Toasts'
 
 export function LoginForm() {
     const router = useRouter()
@@ -15,15 +16,26 @@ export function LoginForm() {
     async function onRegister(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
 
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const {
+            data: { user },
+            error: signInError,
+        } = await supabase.auth.signInWithPassword({
             email,
             password,
         })
-        if (error) {
-            console.error(error.message)
+        if (signInError) {
+            toastError(signInError.message)
             return
         }
 
+        const { data } = await supabase
+            .from('users')
+            .select('firstname, email')
+            .eq('id', user?.id || '')
+            .single()
+        if (data) {
+            toastSuccess(`Welcome back ${data.firstname}!`, `Logged in as ${data.email}`)
+        }
         router.push('/dashboard')
     }
 
