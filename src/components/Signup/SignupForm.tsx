@@ -4,6 +4,7 @@ import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from '@/lib/supabase/database'
+import { toastError, toastSuccess } from '../Toasts'
 
 export function SignupForm() {
     const router = useRouter()
@@ -22,7 +23,7 @@ export function SignupForm() {
             password,
         })
         if (registerError) {
-            console.error(`Failed to signup: ${registerError.message}`)
+            toastError(registerError.message)
             return
         }
 
@@ -33,10 +34,11 @@ export function SignupForm() {
             fullname: firstname + ' ' + lastname,
         })
         if (error) {
-            console.error(`Failed to add user entry: ${error.message}`)
+            toastError('Failed to add user entry', error.message)
             return
         }
 
+        toastSuccess(`Welcome ${firstname}!`, `You're all ready to go!`)
         router.push('/dashboard')
     }
 
