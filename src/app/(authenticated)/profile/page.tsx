@@ -123,7 +123,7 @@ export default function Profile() {
 
                 <form className='flex items-start md:col-span-2'>
                     <button
-                        type='submit'
+                        disabled
                         className='rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400'
                     >
                         Yes, delete my account
