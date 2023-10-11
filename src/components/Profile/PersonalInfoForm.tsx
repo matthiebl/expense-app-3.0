@@ -41,7 +41,7 @@ export function PersonalInfoForm() {
         e.preventDefault()
         const { error } = await supabase
             .from('users')
-            .update({ firstname, lastname })
+            .update({ firstname, lastname, fullname: `${firstname} ${lastname}` })
             .eq('email', email)
         if (error) {
             toastError('Update failed', error.message)
