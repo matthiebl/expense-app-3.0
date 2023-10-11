@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export default function SignupPage() {
     return (
-        <div className='flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8'>
+        <div className='flex min-h-full flex-1 flex-col justify-center bg-slate-900 px-6 py-12 lg:px-8'>
             <div className='sm:mx-auto sm:w-full sm:max-w-lg'>
                 <h2 className='mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white'>
                     Sign Up
