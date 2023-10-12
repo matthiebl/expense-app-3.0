@@ -1,8 +1,11 @@
 import { classNames } from '@/lib/classes'
 import { navigation } from '.'
 import { Profile } from './Profile'
+import { usePathname } from 'next/navigation'
 
 export function NavMenu({ desktop = false }: { desktop?: boolean }) {
+    const pathname = usePathname()
+
     return (
         <>
             <div className='flex h-16 shrink-0 items-center'>
@@ -21,7 +24,7 @@ export function NavMenu({ desktop = false }: { desktop?: boolean }) {
                                     <a
                                         href={item.href}
                                         className={classNames(
-                                            item.current
+                                            pathname === item.href
                                                 ? 'bg-gray-800 text-white'
                                                 : 'text-gray-400 hover:bg-gray-800 hover:text-white',
                                             'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
