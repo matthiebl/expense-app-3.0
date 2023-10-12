@@ -2,6 +2,7 @@ import { classNames } from '@/lib/classes'
 import { navigation } from '.'
 import { Profile } from './Profile'
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 
 export function NavMenu({ desktop = false }: { desktop?: boolean }) {
     const pathname = usePathname()
@@ -21,7 +22,7 @@ export function NavMenu({ desktop = false }: { desktop?: boolean }) {
                         <ul role='list' className='-mx-2 space-y-1'>
                             {navigation.map(item => (
                                 <li key={item.name}>
-                                    <a
+                                    <Link
                                         href={item.href}
                                         className={classNames(
                                             pathname === item.href
@@ -35,7 +36,7 @@ export function NavMenu({ desktop = false }: { desktop?: boolean }) {
                                             aria-hidden='true'
                                         />
                                         {item.name}
-                                    </a>
+                                    </Link>
                                 </li>
                             ))}
                         </ul>
