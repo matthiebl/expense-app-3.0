@@ -1,12 +1,23 @@
 import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
+import { db } from '@/lib/firebase/database'
+import { toastError, toastSuccess } from '../Toasts'
 
 function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ')
 }
 
-export function CategoryEditActions() {
+export function CategoryEditActions({ id }: { id: string }) {
+    const handleDeleteCategory = async () => {
+        const { error } = await db.deleteCategory(id)
+        if (error) {
+            toastError(error.message)
+        } else {
+            toastSuccess('Successfully deleted category')
+        }
+    }
+
     return (
         <Menu as='div' className='relative inline-block text-left'>
             <div>
@@ -29,28 +40,27 @@ export function CategoryEditActions() {
                     <div className='py-1'>
                         <Menu.Item>
                             {({ active }) => (
-                                <a
-                                    href='#'
+                                <button
                                     className={classNames(
                                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                                        'block px-4 py-2 text-sm',
+                                        'block w-full px-4 py-2 text-left text-sm',
                                     )}
                                 >
                                     Edit
-                                </a>
+                                </button>
                             )}
                         </Menu.Item>
                         <Menu.Item>
                             {({ active }) => (
-                                <a
-                                    href='#'
+                                <button
+                                    onClick={handleDeleteCategory}
                                     className={classNames(
                                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                                        'block px-4 py-2 text-sm',
+                                        'block w-full px-4 py-2 text-left text-sm',
                                     )}
                                 >
                                     Delete
-                                </a>
+                                </button>
                             )}
                         </Menu.Item>
                     </div>

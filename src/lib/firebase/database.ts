@@ -2,12 +2,14 @@ import {
     Firestore,
     Timestamp,
     collection,
+    deleteDoc,
     doc,
     getDocs,
     onSnapshot,
     query,
     serverTimestamp,
     setDoc,
+    updateDoc,
     where,
     writeBatch,
 } from 'firebase/firestore'
@@ -72,6 +74,25 @@ class FireDB {
             })
         })
         await batch.commit()
+    }
+
+    async editCategory(id: string, category: string) {
+        const ref = doc(this.fb, 'categories', id)
+        await updateDoc(ref, {
+            category,
+        })
+    }
+
+    async deleteCategory(id: string) {
+        const q = query(collection(this.fb, 'transactions'), where('category', '==', id))
+        const existing = await getDocs(q)
+        if (!existing.empty) {
+            return { error: { message: 'Cannot delete category that is being used', code: 999 } }
+        }
+
+        const ref = doc(this.fb, 'categories', id)
+        await deleteDoc(ref)
+        return {}
     }
 }
 

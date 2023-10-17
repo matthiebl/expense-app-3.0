@@ -7,17 +7,51 @@ import { auth } from '@/lib/firebase/auth'
 import { PlusIcon } from '@heroicons/react/24/outline'
 import { DefaultCategoriesModal } from '../Modals/DefaultCategories'
 import { CategoryEditActions } from '../Dropdowns/CategoryActions'
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
+type CategorySort = 'category' | 'type' | 'none'
+const sortCategories = (data: Category[], sort: CategorySort) => {
+    let sorter = (a: Category, b: Category) => 0
+    if (sort === 'category') {
+        sorter = (a: Category, b: Category) => {
+            const titleA = a.category.toLowerCase()
+            const titleB = b.category.toLowerCase()
+            return titleA > titleB ? 1 : titleA < titleB ? -1 : 0
+        }
+    } else if (sort === 'type') {
+        sorter = (a: Category, b: Category) => {
+            const kindA = a.kind.toLowerCase()
+            const kindB = b.kind.toLowerCase()
+            return kindA > kindB ? -1 : kindA < kindB ? 1 : 0
+        }
+    }
+    const copy = [...data]
+    return copy.sort(sorter)
+}
+
 export function Categories() {
+    const query = useSearchParams()
+    const router = useRouter()
     const [categories, setCategories] = useState<Category[]>([])
     const [open, setOpen] = useState(false)
 
     useEffect(() => {
         const fetchData = async (uid: string) => {
-            db.categories(uid, data => setCategories(data))
+            db.categories(uid, data => {
+                const sort = query.get('sort')
+                const reversed = query.get('reversed')
+                if (sort === 'category' || sort === 'type') {
+                    data = sortCategories(data, sort)
+                }
+                if (reversed === 'true') {
+                    data.reverse()
+                }
+                setCategories(data)
+            })
         }
         onAuthStateChanged(auth.fb, user => {
             if (user) {
@@ -25,6 +59,19 @@ export function Categories() {
             }
         })
     }, [])
+
+    const toggleSort = (input: CategorySort) => {
+        const sort = query.get('sort')
+        const reversed = query.get('reversed')
+        if (input === sort) {
+            const newReversed = reversed === 'true' ? 'false' : 'true'
+            setCategories(categories.reverse())
+            router.replace(`/transactions/categories?sort=${sort}&reversed=${newReversed}`)
+        } else {
+            setCategories(sortCategories(categories, input))
+            router.replace(`/transactions/categories?sort=${input}`)
+        }
+    }
 
     return (
         <div className='-mx-4 -my-2 mt-8 overflow-x-auto pb-16 sm:-mx-6 lg:-mx-8'>
@@ -36,13 +83,49 @@ export function Categories() {
                                 scope='col'
                                 className='py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 lg:pl-8'
                             >
-                                Category
+                                <button
+                                    onClick={() => toggleSort('category')}
+                                    className='group inline-flex'
+                                >
+                                    Category
+                                    <span
+                                        data-selected={query.get('sort') === 'category'}
+                                        className='invisible ml-2 flex-none rounded text-gray-400 group-hover:visible data-[selected=true]:visible data-[selected=true]:bg-gray-100 data-[selected=true]:text-gray-900 data-[selected=true]:group-hover:bg-gray-200'
+                                    >
+                                        {query.get('reversed') === 'true' ? (
+                                            <ChevronUpIcon className='h-5 w-5' aria-hidden='true' />
+                                        ) : (
+                                            <ChevronDownIcon
+                                                className='h-5 w-5'
+                                                aria-hidden='true'
+                                            />
+                                        )}
+                                    </span>
+                                </button>
                             </th>
                             <th
                                 scope='col'
                                 className='px-3 py-3.5 text-left text-sm font-semibold text-gray-900'
                             >
-                                Type
+                                <button
+                                    onClick={() => toggleSort('type')}
+                                    className='group inline-flex'
+                                >
+                                    Type
+                                    <span
+                                        data-selected={query.get('sort') === 'type'}
+                                        className='invisible ml-2 flex-none rounded text-gray-400 group-hover:visible data-[selected=true]:visible data-[selected=true]:bg-gray-100 data-[selected=true]:text-gray-900 data-[selected=true]:group-hover:bg-gray-200'
+                                    >
+                                        {query.get('reversed') === 'true' ? (
+                                            <ChevronUpIcon className='h-5 w-5' aria-hidden='true' />
+                                        ) : (
+                                            <ChevronDownIcon
+                                                className='h-5 w-5'
+                                                aria-hidden='true'
+                                            />
+                                        )}
+                                    </span>
+                                </button>
                             </th>
                             <th scope='col' className='relative py-3.5 pl-3 pr-4 sm:pr-6 lg:pr-8'>
                                 <span className='sr-only'>Edit</span>
@@ -56,10 +139,19 @@ export function Categories() {
                                     {category.category}
                                 </td>
                                 <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
-                                    {category.kind}
+                                    <span
+                                        className={`${
+                                            category.kind === 'Income'
+                                                ? 'bg-green-50 text-green-800 ring-green-600/20'
+                                                : 'bg-red-50 text-red-800 ring-red-600/20'
+                                        }
+                                                                 mr-2 inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset`}
+                                    >
+                                        {category.kind}
+                                    </span>
                                 </td>
                                 <td className='relative flex items-center justify-end py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8'>
-                                    <CategoryEditActions />
+                                    <CategoryEditActions id={category.id} />
                                     <span className='sr-only'>Edit, {category.category}</span>
                                 </td>
                             </tr>
