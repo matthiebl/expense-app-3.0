@@ -8,20 +8,19 @@ import {
 import { authFB } from './config'
 
 class FireAuth {
-    auth: Auth
+    fb: Auth
 
     constructor(auth: Auth) {
-        this.auth = auth
+        this.fb = auth
     }
 
     displayName() {
-        console.log(this.auth)
-        return this.auth.currentUser?.displayName || null
+        return this.fb.currentUser?.displayName || null
     }
 
     async signUp(email: string, password: string) {
         try {
-            const { user } = await createUserWithEmailAndPassword(this.auth, email, password)
+            const { user } = await createUserWithEmailAndPassword(this.fb, email, password)
             return { user }
         } catch (error: any) {
             return {
@@ -35,7 +34,7 @@ class FireAuth {
 
     async signIn(email: string, password: string) {
         try {
-            const { user } = await signInWithEmailAndPassword(this.auth, email, password)
+            const { user } = await signInWithEmailAndPassword(this.fb, email, password)
             return { user }
         } catch (error: any) {
             return {
@@ -49,7 +48,7 @@ class FireAuth {
 
     async signOut() {
         try {
-            await signOut(this.auth)
+            await signOut(this.fb)
             return {}
         } catch (error: any) {
             return {
@@ -62,7 +61,7 @@ class FireAuth {
     }
 
     async updateProfile(displayName: string) {
-        if (!this.auth.currentUser) {
+        if (!this.fb.currentUser) {
             return {
                 error: {
                     message: 'No user is signed in',
@@ -71,7 +70,7 @@ class FireAuth {
             }
         }
         try {
-            await updateProfile(this.auth.currentUser, {
+            await updateProfile(this.fb.currentUser, {
                 displayName,
             })
             return {}

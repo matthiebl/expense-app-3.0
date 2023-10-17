@@ -14,7 +14,7 @@ export function PersonalInfoForm() {
     const [email, setEmail] = useState('')
 
     useEffect(() => {
-        onAuthStateChanged(auth.auth, user => {
+        onAuthStateChanged(auth.fb, user => {
             if (user) {
                 setDisplayName(user.displayName || '')
                 setEmail(user.email || '')

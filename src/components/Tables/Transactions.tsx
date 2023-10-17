@@ -13,7 +13,7 @@ const ts = [
         date: '01/04/2023',
     },
     {
-        id: 'abc',
+        id: 'abcd',
         title: 'Payment with a long title',
         type: 'Income',
         category: 'Salary',
@@ -22,7 +22,7 @@ const ts = [
         date: '01/04/2023',
     },
     {
-        id: 'abc',
+        id: 'abce',
         title: 'Payment with a long title',
         type: 'Income',
         category: 'Salary',

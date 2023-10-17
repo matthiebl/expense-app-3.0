@@ -1,10 +1,10 @@
-import { Header } from '@/components/Headings'
+import { CategoriesHeader } from '@/components/Headings/CategoriesHeader'
 import { Categories } from '@/components/Tables/Categories'
 
 export default function CategoriesPage() {
     return (
         <>
-            <Header title='Categories' />
+            <CategoriesHeader />
             <Categories />
         </>
     )

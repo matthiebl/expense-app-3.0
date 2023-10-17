@@ -9,7 +9,7 @@ export function Profile() {
     const [name, setName] = useState<string | null>(null)
 
     useEffect(() => {
-        onAuthStateChanged(auth.auth, user => {
+        onAuthStateChanged(auth.fb, user => {
             if (user) {
                 setName(user.displayName)
             }

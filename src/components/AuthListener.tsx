@@ -9,7 +9,7 @@ export function AuthListener() {
     const router = useRouter()
 
     useEffect(() => {
-        onAuthStateChanged(auth.auth, user => {
+        onAuthStateChanged(auth.fb, user => {
             if (!user) {
                 router.replace('/')
             }
