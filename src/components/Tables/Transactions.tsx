@@ -5,7 +5,25 @@ import Link from 'next/link'
 const ts = [
     {
         id: 'abc',
-        title: 'Payment',
+        title: 'Payment with a long title',
+        type: 'Income',
+        category: 'Salary',
+        amount: 100.54,
+        group: '',
+        date: '01/04/2023',
+    },
+    {
+        id: 'abc',
+        title: 'Payment with a long title',
+        type: 'Income',
+        category: 'Salary',
+        amount: 100.54,
+        group: '',
+        date: '01/04/2023',
+    },
+    {
+        id: 'abc',
+        title: 'Payment with a long title',
         type: 'Income',
         category: 'Salary',
         amount: 100.54,
@@ -67,6 +85,9 @@ export function Transactions() {
                             <tr key={t.id}>
                                 <td className='whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8'>
                                     {t.title}
+                                    {/* <span className='absolute left-0 z-50 ml-4 hidden -translate-y-5 whitespace-break-spaces bg-white p-2 group-hover:flex sm:ml-6 lg:ml-[320px]'>
+                                        {t.title}
+                                    </span> */}
                                 </td>
                                 <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
                                     {t.type}
