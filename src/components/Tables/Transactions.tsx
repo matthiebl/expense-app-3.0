@@ -1,6 +1,5 @@
 'use client'
 
-import { Database } from '@/lib/supabase/database'
 import Link from 'next/link'
 
 const ts = [

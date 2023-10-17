@@ -1,17 +1,15 @@
 'use client'
 
-import { Database } from '@/lib/supabase/database'
-import { ArrowRightOnRectangleIcon } from '@heroicons/react/20/solid'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
+import { ArrowRightOnRectangleIcon } from '@heroicons/react/20/solid'
+import { auth } from '@/lib/firebase/auth'
 import { toastError } from '../Toasts'
 
 export function LogoutButton() {
     const router = useRouter()
-    const supabase = createClientComponentClient<Database>()
 
     async function onLogout() {
-        const { error } = await supabase.auth.signOut()
+        const { error } = await auth.signOut()
         if (error) {
             toastError(`Unable to logout`, error.message)
             return

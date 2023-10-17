@@ -1,23 +1,19 @@
-import { Database } from '@/lib/supabase/database'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { toastError } from '../Toasts'
+import { auth } from '@/lib/firebase/auth'
+import { authFB } from '@/lib/firebase/config'
+import { onAuthStateChanged } from 'firebase/auth'
 
 export function Profile() {
     const [name, setName] = useState<string | null>(null)
 
     useEffect(() => {
-        const fetchName = async () => {
-            const supabase = createClientComponentClient<Database>()
-            const { data, error } = await supabase.from('users').select('fullname').single()
-            if (data) {
-                setName(data.fullname)
-            } else {
-                toastError('Unable to fetch name!', error.message)
+        onAuthStateChanged(auth.auth, user => {
+            if (user) {
+                setName(user.displayName)
             }
-        }
-        fetchName()
+        })
     }, [])
 
     return (

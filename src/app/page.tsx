@@ -1,15 +1,9 @@
 import Link from 'next/link'
-import { cookies } from 'next/headers'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Database } from '@/lib/supabase/database'
 
 export const dynamic = 'force-dynamic'
 
 export default async function Hero() {
-    const supabase = createServerComponentClient<Database>({ cookies })
-
-    const { error } = await supabase.auth.getUser()
-    const authed = !error
+    const authed = false
 
     return (
         <div className='h-full bg-slate-900'>

@@ -1,3 +1,9 @@
+import { Header } from '@/components/Headings'
+
 export default function CategoriesPage() {
-    return <>Categories</>
+    return (
+        <>
+            <Header title='Categories' />
+        </>
+    )
 }

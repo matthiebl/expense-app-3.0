@@ -1,3 +1,9 @@
+import { Header } from '@/components/Headings'
+
 export default function NewDataPage() {
-    return <>New Transactions</>
+    return (
+        <>
+            <Header title='Add Transactions' />
+        </>
+    )
 }

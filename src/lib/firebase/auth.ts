@@ -1,4 +1,10 @@
-import { Auth, createUserWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth'
+import {
+    Auth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    updateProfile,
+} from 'firebase/auth'
 import { authFB } from './config'
 
 class FireAuth {
@@ -16,6 +22,20 @@ class FireAuth {
     async signUp(email: string, password: string) {
         try {
             const { user } = await createUserWithEmailAndPassword(this.auth, email, password)
+            return { user }
+        } catch (error: any) {
+            return {
+                error: {
+                    code: error.code,
+                    message: error.message,
+                },
+            }
+        }
+    }
+
+    async signIn(email: string, password: string) {
+        try {
+            const { user } = await signInWithEmailAndPassword(this.auth, email, password)
             return { user }
         } catch (error: any) {
             return {

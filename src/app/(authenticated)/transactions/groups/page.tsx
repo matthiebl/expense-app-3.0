@@ -1,3 +1,9 @@
+import { Header } from '@/components/Headings'
+
 export default function GroupsPage() {
-    return <>Groups</>
+    return (
+        <>
+            <Header title='Groups' />
+        </>
+    )
 }
