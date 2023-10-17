@@ -6,6 +6,7 @@ import { Category, db } from '@/lib/firebase/database'
 import { auth } from '@/lib/firebase/auth'
 import { PlusIcon } from '@heroicons/react/24/outline'
 import { DefaultCategoriesModal } from '../Modals/DefaultCategories'
+import { CategoryEditActions } from '../Dropdowns/CategoryActions'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -26,7 +27,7 @@ export function Categories() {
     }, [])
 
     return (
-        <div className='-mx-4 -my-2 mt-8 overflow-x-auto sm:-mx-6 lg:-mx-8'>
+        <div className='-mx-4 -my-2 mt-8 overflow-x-auto pb-16 sm:-mx-6 lg:-mx-8'>
             <div className='inline-block min-w-full py-2 align-middle'>
                 <table className='min-w-full divide-y divide-gray-300'>
                     <thead>
@@ -57,10 +58,9 @@ export function Categories() {
                                 <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
                                     {category.kind}
                                 </td>
-                                <td className='relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8'>
-                                    <button className='text-indigo-600 hover:text-indigo-900'>
-                                        Edit<span className='sr-only'>, {category.category}</span>
-                                    </button>
+                                <td className='relative flex items-center justify-end py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8'>
+                                    <CategoryEditActions />
+                                    <span className='sr-only'>Edit, {category.category}</span>
                                 </td>
                             </tr>
                         ))}
