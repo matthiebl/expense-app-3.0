@@ -1,4 +1,16 @@
-import { Firestore, Timestamp, collection, getDocs, query, where } from 'firebase/firestore'
+import {
+    Firestore,
+    Timestamp,
+    collection,
+    doc,
+    getDocs,
+    onSnapshot,
+    query,
+    serverTimestamp,
+    setDoc,
+    where,
+    writeBatch,
+} from 'firebase/firestore'
 import { dbFB } from './config'
 
 export type Category = {
@@ -9,6 +21,11 @@ export type Category = {
     createdAt: Timestamp
 }
 
+type CategoryInput = {
+    kind: 'Income' | 'Expense'
+    category: string
+}
+
 class FireDB {
     fb: Firestore
 
@@ -16,21 +33,45 @@ class FireDB {
         this.fb = db
     }
 
-    async categories(uid: string) {
+    categories(uid: string, callback: (categories: Category[]) => void) {
         const q = query(collection(this.fb, 'categories'), where('uid', '==', uid))
-        const docs = await getDocs(q)
-        const categories: Category[] = []
-        docs.forEach(doc => {
-            const data = doc.data()
-            categories.push({
-                id: doc.id,
-                uid: data.uid,
-                kind: data.kind,
-                category: data.category,
-                createdAt: data.createdAt,
+        onSnapshot(q, snapshot => {
+            const categories: Category[] = []
+            snapshot.forEach(doc => {
+                const data = doc.data()
+                categories.push({
+                    id: doc.id,
+                    uid: data.uid,
+                    kind: data.kind,
+                    category: data.category,
+                    createdAt: data.createdAt,
+                })
+            })
+            callback(categories)
+        })
+    }
+
+    async addCategory(uid: string, { kind, category }: CategoryInput) {
+        await setDoc(doc(this.fb, 'categories', crypto.randomUUID()), {
+            uid,
+            kind,
+            category,
+            createdAt: serverTimestamp(),
+        })
+    }
+
+    async addCategories(uid: string, categories: CategoryInput[]) {
+        const batch = writeBatch(this.fb)
+        categories.forEach(({ kind, category }) => {
+            const ref = doc(this.fb, 'categories', crypto.randomUUID())
+            batch.set(ref, {
+                uid,
+                kind,
+                category,
+                createdAt: serverTimestamp(),
             })
         })
-        return categories
+        await batch.commit()
     }
 }
 

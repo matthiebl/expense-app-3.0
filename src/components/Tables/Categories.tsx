@@ -7,14 +7,16 @@ import { auth } from '@/lib/firebase/auth'
 import { PlusIcon } from '@heroicons/react/24/outline'
 import { DefaultCategoriesModal } from '../Modals/DefaultCategories'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export function Categories() {
     const [categories, setCategories] = useState<Category[]>([])
     const [open, setOpen] = useState(false)
 
     useEffect(() => {
         const fetchData = async (uid: string) => {
-            const data = await db.categories(uid)
-            setCategories(data)
+            db.categories(uid, data => setCategories(data))
         }
         onAuthStateChanged(auth.fb, user => {
             if (user) {

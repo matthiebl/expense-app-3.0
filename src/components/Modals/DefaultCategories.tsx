@@ -1,10 +1,14 @@
-import { Dispatch, Fragment, SetStateAction, useRef, useState } from 'react'
+import { Dispatch, Fragment, SetStateAction, useEffect, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
+import { toastSuccess } from '../Toasts'
+import { db } from '@/lib/firebase/database'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '@/lib/firebase/auth'
 
 const defaultIncome = [
     'Paycheck',
     'Bonus',
-    'Savings',
+    'Savings Withdrawal',
     'Interest',
     'Dividends',
     'Refund',
@@ -40,9 +44,16 @@ const defaultExpenses = [
     'Other',
 ]
 
-const defaultCategories = [
-    ...defaultIncome.map(category => ({ category, kind: 'Income', include: true })),
-    ...defaultExpenses.map(category => ({ category, kind: 'Expense', include: true })),
+type CategoryKind = 'Income' | 'Expense'
+type SelectCategory = { kind: CategoryKind; category: string; include: boolean }
+
+const defaultCategories: SelectCategory[] = [
+    ...defaultIncome.map(category => ({ category, kind: 'Income' as CategoryKind, include: true })),
+    ...defaultExpenses.map(category => ({
+        category,
+        kind: 'Expense' as CategoryKind,
+        include: true,
+    })),
 ]
 
 export function DefaultCategoriesModal({
@@ -53,7 +64,32 @@ export function DefaultCategoriesModal({
     setOpen: Dispatch<SetStateAction<boolean>>
 }) {
     const cancelButtonRef = useRef(null)
+    const [uid, setUID] = useState<string | null>(null)
     const [categories, setCategories] = useState(defaultCategories)
+
+    useEffect(() => {
+        onAuthStateChanged(auth.fb, user => {
+            if (user) {
+                setUID(user.uid)
+            }
+        })
+    }, [])
+
+    const handleSubmitCategories = async () => {
+        if (!uid) {
+            return
+        }
+
+        await db.addCategories(
+            uid,
+            categories
+                .filter(({ include }) => include)
+                .map(({ kind, category }) => ({ kind, category })),
+        )
+
+        setOpen(false)
+        toastSuccess('Successfully added selected categories')
+    }
 
     return (
         <Transition.Root show={open} as={Fragment}>
@@ -112,21 +148,20 @@ export function DefaultCategoriesModal({
                                                     key={index}
                                                     className='relative flex items-start py-4'
                                                 >
-                                                    <div className='min-w-0 flex-1 text-sm leading-6'>
+                                                    <div className='flex min-w-0 flex-1 justify-between text-sm leading-6'>
                                                         <label
                                                             htmlFor={`category-${index}`}
                                                             className='mr-2 select-none font-medium text-gray-900'
                                                         >
                                                             {category.category}
                                                         </label>
-
                                                         <span
                                                             className={`${
                                                                 category.kind === 'Income'
                                                                     ? 'bg-green-50 text-green-800 ring-green-600/20'
-                                                                    : 'bg-yellow-50 text-yellow-800 ring-yellow-600/20'
+                                                                    : 'bg-red-50 text-red-800 ring-red-600/20'
                                                             }
-                                                                 inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset`}
+                                                                 mr-2 inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset`}
                                                         >
                                                             {category.kind}
                                                         </span>
@@ -155,7 +190,7 @@ export function DefaultCategoriesModal({
                                     <button
                                         type='button'
                                         className='inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto'
-                                        onClick={() => setOpen(false)}
+                                        onClick={handleSubmitCategories}
                                     >
                                         Confirm
                                     </button>

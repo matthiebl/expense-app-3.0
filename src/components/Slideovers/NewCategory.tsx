@@ -1,9 +1,13 @@
 'use client'
 
-import { Dispatch, FormEvent, Fragment, SetStateAction, useState } from 'react'
+import { Dispatch, FormEvent, Fragment, SetStateAction, useEffect, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import { QuestionMarkCircleIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { LinkIcon, PlusIcon } from '@heroicons/react/20/solid'
+import { XMarkIcon } from '@heroicons/react/24/outline'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '@/lib/firebase/auth'
+import { db } from '@/lib/firebase/database'
+import { toastSuccess } from '../Toasts'
+import { useRouter } from 'next/navigation'
 
 export function NewCategorySlide({
     open,
@@ -12,13 +16,30 @@ export function NewCategorySlide({
     open: boolean
     setOpen: Dispatch<SetStateAction<boolean>>
 }) {
-    const [newTitle, setNewTitle] = useState('')
+    const [uid, setUID] = useState<string | null>(null)
+    const [category, setCategory] = useState('')
     const [kind, setKind] = useState<'Income' | 'Expense'>('Income')
+
+    useEffect(() => {
+        onAuthStateChanged(auth.fb, user => {
+            if (user) {
+                setUID(user.uid)
+            }
+        })
+    })
 
     const onSubmitNewCategory = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
-        console.log('Create new', newTitle, kind)
+        if (!uid) {
+            return
+        }
+
+        await db.addCategory(uid, { kind, category })
+        toastSuccess('Successfully added new category')
+        setOpen(false)
+        setCategory('')
+        setKind('Income')
     }
 
     return (
@@ -89,9 +110,9 @@ export function NewCategorySlide({
                                                                     name='category-name'
                                                                     id='category-name'
                                                                     required
-                                                                    value={newTitle}
+                                                                    value={category}
                                                                     onChange={e =>
-                                                                        setNewTitle(e.target.value)
+                                                                        setCategory(e.target.value)
                                                                     }
                                                                     pattern='[a-zA-Z ]{2,25}'
                                                                     className='block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
