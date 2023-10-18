@@ -151,7 +151,10 @@ export function Categories() {
                                     </span>
                                 </td>
                                 <td className='relative flex items-center justify-end py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8'>
-                                    <CategoryEditActions id={category.id} />
+                                    <CategoryEditActions
+                                        id={category.id}
+                                        category={category.category}
+                                    />
                                     <span className='sr-only'>Edit, {category.category}</span>
                                 </td>
                             </tr>
