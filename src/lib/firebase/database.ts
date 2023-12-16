@@ -94,6 +94,27 @@ class FireDB {
         await deleteDoc(ref)
         return {}
     }
+
+    async addTransaction(
+        uid: string,
+        title: string,
+        description: string,
+        category: string,
+        amount: string,
+        date: string,
+    ) {
+        const number = Number.parseFloat(amount)
+        await setDoc(doc(this.fb, 'transactions', crypto.randomUUID()), {
+            uid,
+            title,
+            description,
+            amount: number,
+            date,
+            category,
+            group: '',
+            createdAt: serverTimestamp(),
+        })
+    }
 }
 
 export const db = new FireDB(dbFB)
