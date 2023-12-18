@@ -46,6 +46,10 @@ export function AddTransaction() {
         setCategory({ id: '0', main: 'Select an option', secondary: '' })
         setAmount('')
         setDate('')
+
+        if (fileEntries.length) {
+            setFileEntries(fileEntries.slice(1))
+        }
     }
 
     const handleSubmitTransaction = (e: FormEvent<HTMLFormElement>) => {
@@ -62,13 +66,28 @@ export function AddTransaction() {
             toastError('Amount is not a valid number')
             return
         }
-        if (!/^\d\d\/\d\d\/\d\d\d\d$/.test(date)) {
+        if (!/^\d\d\d\d-\d\d-\d\d$/.test(date)) {
+            console.log(date)
             toastError('Select a valid date')
             return
         }
 
         db.addTransaction(uid, title, description, category.id, amount, date)
+
+        if (fileEntries.length) {
+            setFileEntries(fileEntries.slice(1))
+        }
     }
+
+    useEffect(() => {
+        if (fileEntries.length === 0) {
+            return
+        }
+        const { date, amount, description } = fileEntries[0]
+        setDate(date)
+        setAmount(amount)
+        setDescription(description)
+    }, [fileEntries])
 
     return (
         <form onSubmit={handleSubmitTransaction}>
@@ -86,14 +105,14 @@ export function AddTransaction() {
                             name='title'
                             id='title'
                             required
-                            pattern='([a-zA-Z0-9.,#]| |-){2,35}'
+                            pattern='([a-zA-Z0-9.#]| |-){2,35}'
                             value={title}
                             onChange={e => setTitle(e.target.value)}
                             className='block w-full rounded-md border-0 px-2.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                         />
                     </div>
                     <p className='mt-2 text-sm text-gray-500'>
-                        Must be 2-35 letters, numbers, spaces or (- , . #)
+                        Must be 2-35 letters, numbers, spaces or (- . #)
                     </p>
                 </div>
 
@@ -187,18 +206,16 @@ export function AddTransaction() {
                         type='submit'
                         className='ml-3 inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
                     >
-                        Create
+                        {fileEntries.length > 1 ? 'Create and next' : 'Create'}
                     </button>
                 </div>
                 <div className='col-span-full'>
-                    <TransactionFileDrop
-                        fileEntries={setFileEntries}
-                        title={setTitle}
-                        description={setDescription}
-                        category={setCategory}
-                        amount={setAmount}
-                        date={setDate}
-                    />
+                    <TransactionFileDrop fileEntries={setFileEntries} />
+                    {fileEntries.length > 0 && (
+                        <p className='mt-2 text-sm text-gray-500'>
+                            Uploaded file with {fileEntries.length - 1} entries remaining
+                        </p>
+                    )}
                 </div>
             </div>
         </form>
