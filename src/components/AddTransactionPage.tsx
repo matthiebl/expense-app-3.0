@@ -72,7 +72,7 @@ export function AddTransaction() {
             return
         }
 
-        db.addTransaction(uid, title, description, category.id, amount, date)
+        db.addTransaction(uid, { title, description, category: category.id, amount, date })
 
         if (fileEntries.length) {
             setFileEntries(fileEntries.slice(1))

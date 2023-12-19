@@ -1,38 +1,54 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
-const ts = [
-    {
-        id: 'abc',
-        title: 'Payment with a long title',
-        type: 'Income',
-        category: 'Salary',
-        amount: 100.54,
-        group: '',
-        date: '01/04/2023',
-    },
-    {
-        id: 'abcd',
-        title: 'Payment with a long title',
-        type: 'Income',
-        category: 'Salary',
-        amount: 100.54,
-        group: '',
-        date: '01/04/2023',
-    },
-    {
-        id: 'abce',
-        title: 'Payment with a long title',
-        type: 'Income',
-        category: 'Salary',
-        amount: 100.54,
-        group: '',
-        date: '01/04/2023',
-    },
-]
+import { Transaction, db } from '@/lib/firebase/database'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '@/lib/firebase/auth'
+
+const formatAmount = (value: number): string => {
+    if (value < 0) {
+        return '-$' + Math.abs(value)
+    }
+    return '$' + value
+}
 
 export function Transactions() {
+    const [transactions, setTransactions] = useState<(Transaction & { kind: string })[]>([])
+
+    useEffect(() => {
+        const fetchData = async (uid: string) => {
+            db.categories(uid, categories => {
+                const findCategories: Record<string, { kind: string; category: string }> = {}
+                categories.forEach(({ id, kind, category }) => {
+                    findCategories[id] = { kind, category }
+                })
+                db.transactions(uid, data => {
+                    const transactions = data.map(transaction => ({
+                        ...transaction,
+                        kind: findCategories[transaction.category].kind,
+                        category: findCategories[transaction.category].category,
+                    }))
+                    // const sort = query.get('sort')
+                    // const reversed = query.get('reversed')
+                    // if (sort === 'category' || sort === 'type') {
+                    //     data = sortCategories(data, sort)
+                    // }
+                    // if (reversed === 'true') {
+                    //     data.reverse()
+                    // }
+                    setTransactions(transactions)
+                })
+            })
+        }
+        onAuthStateChanged(auth.fb, user => {
+            if (user) {
+                fetchData(user.uid)
+            }
+        })
+    }, [])
+
     return (
         <div className='-mx-4 -my-2 mt-8 overflow-x-auto sm:-mx-6 lg:-mx-8'>
             <div className='inline-block min-w-full py-2 align-middle'>
@@ -81,22 +97,33 @@ export function Transactions() {
                         </tr>
                     </thead>
                     <tbody className='divide-y divide-gray-200 bg-white'>
-                        {ts.map(t => (
+                        {transactions.map(t => (
                             <tr key={t.id}>
                                 <td className='whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8'>
-                                    {t.title}
-                                    {/* <span className='absolute left-0 z-50 ml-4 hidden -translate-y-5 whitespace-break-spaces bg-white p-2 group-hover:flex sm:ml-6 lg:ml-[320px]'>
+                                    <span className='group relative hover:cursor-help'>
                                         {t.title}
-                                    </span> */}
+                                        <span className='fixed hidden -translate-y-0.5 translate-x-3 rounded-md bg-white px-2 py-1 text-xs font-light text-gray-600 outline outline-1 outline-gray-200 group-hover:inline-block'>
+                                            {t.description}
+                                        </span>
+                                    </span>
                                 </td>
                                 <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
-                                    {t.type}
+                                    <span
+                                        className={`${
+                                            t.kind === 'Income'
+                                                ? 'bg-green-50 text-green-800 ring-green-600/20'
+                                                : 'bg-red-50 text-red-800 ring-red-600/20'
+                                        }
+                                                                 mr-2 inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset`}
+                                    >
+                                        {t.kind}
+                                    </span>
                                 </td>
                                 <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
                                     {t.category}
                                 </td>
                                 <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
-                                    {t.amount}
+                                    {formatAmount(t.amount)}
                                 </td>
                                 <td
                                     data-no-group={t.group === ''}

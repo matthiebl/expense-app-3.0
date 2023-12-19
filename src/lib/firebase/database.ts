@@ -28,6 +28,26 @@ type CategoryInput = {
     category: string
 }
 
+export type Transaction = {
+    id: string
+    uid: string
+    title: string
+    description: string
+    amount: number
+    date: string
+    category: string
+    group: string
+    createdAt: Timestamp
+}
+
+type TransactionInput = {
+    title: string
+    description: string
+    category: string
+    amount: string
+    date: string
+}
+
 class FireDB {
     fb: Firestore
 
@@ -95,13 +115,31 @@ class FireDB {
         return {}
     }
 
+    transactions(uid: string, callback: (transactions: Transaction[]) => void) {
+        const q = query(collection(this.fb, 'transactions'), where('uid', '==', uid))
+        onSnapshot(q, snapshot => {
+            const transactions: Transaction[] = []
+            snapshot.forEach(doc => {
+                const data = doc.data()
+                transactions.push({
+                    id: doc.id,
+                    uid: data.uid,
+                    title: data.title,
+                    description: data.description,
+                    amount: data.amount,
+                    date: data.date,
+                    category: data.category,
+                    group: data.group,
+                    createdAt: data.createdAt,
+                })
+            })
+            callback(transactions)
+        })
+    }
+
     async addTransaction(
         uid: string,
-        title: string,
-        description: string,
-        category: string,
-        amount: string,
-        date: string,
+        { title, description, category, amount, date }: TransactionInput,
     ) {
         const number = Number.parseFloat(amount)
         await setDoc(doc(this.fb, 'transactions', crypto.randomUUID()), {
