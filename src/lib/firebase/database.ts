@@ -6,6 +6,7 @@ import {
     doc,
     getDocs,
     onSnapshot,
+    orderBy,
     query,
     serverTimestamp,
     setDoc,
@@ -46,6 +47,23 @@ type TransactionInput = {
     category: string
     amount: string
     date: string
+}
+
+export type Rule = {
+    id: string
+    uid: string
+    title: string
+    category: string
+    regex: string
+    sortIndex: number
+    createdAt: Timestamp
+}
+
+type RuleInput = {
+    title: string
+    category: string
+    regex: string
+    sortIndex: number
 }
 
 class FireDB {
@@ -150,6 +168,37 @@ class FireDB {
             date,
             category,
             group: '',
+            createdAt: serverTimestamp(),
+        })
+    }
+
+    rules(uid: string, callback: (rules: Rule[]) => void) {
+        const q = query(collection(this.fb, 'rules'), where('uid', '==', uid), orderBy('sortIndex'))
+        onSnapshot(q, snapshot => {
+            const rules: Rule[] = []
+            snapshot.forEach(doc => {
+                const data = doc.data()
+                rules.push({
+                    id: doc.id,
+                    uid: data.uid,
+                    title: data.title,
+                    category: data.category,
+                    regex: data.regex,
+                    sortIndex: data.sortIndex,
+                    createdAt: data.createdAt,
+                })
+            })
+            callback(rules)
+        })
+    }
+
+    async addRule(uid: string, { title, category, regex, sortIndex }: RuleInput) {
+        await setDoc(doc(this.fb, 'rules', crypto.randomUUID()), {
+            uid,
+            title,
+            category,
+            regex,
+            sortIndex,
             createdAt: serverTimestamp(),
         })
     }
