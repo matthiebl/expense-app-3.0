@@ -6,7 +6,7 @@ import { auth } from '@/lib/firebase/auth'
 import { db } from '@/lib/firebase/database'
 import { CategorySelect, CategoryOption } from './Dropdowns/CategorySelect'
 import { CalendarIcon } from '@heroicons/react/20/solid'
-import { toastError } from './Toasts'
+import { toastError, toastSuccess } from './Toasts'
 import { TransactionFileDrop } from './TransactionFileDrop'
 
 export function AddTransaction() {
@@ -73,6 +73,8 @@ export function AddTransaction() {
         }
 
         db.addTransaction(uid, { title, description, category: category.id, amount, date })
+        toastSuccess('Successfully created transaction', title)
+        handleClear()
 
         if (fileEntries.length) {
             setFileEntries(fileEntries.slice(1))
