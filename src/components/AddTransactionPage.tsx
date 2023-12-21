@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '@/lib/firebase/auth'
-import { db } from '@/lib/firebase/database'
+import { Rule, db } from '@/lib/firebase/database'
 import { CategorySelect, CategoryOption } from './Dropdowns/CategorySelect'
 import { CalendarIcon } from '@heroicons/react/20/solid'
 import { toastError, toastSuccess } from './Toasts'
@@ -18,6 +18,7 @@ export function AddTransaction() {
     const [date, setDate] = useState('')
 
     const [categories, setCategories] = useState<CategoryOption[]>([])
+    const [rules, setRules] = useState<Rule[]>([])
     const [fileEntries, setFileEntries] = useState<
         { date: string; amount: string; description: string }[]
     >([])
@@ -36,6 +37,7 @@ export function AddTransaction() {
                         .sort((a, b) => (a.main > b.main ? 1 : -1))
                     setCategories(categories)
                 })
+                db.rules(user.uid, data => setRules(data))
             }
         })
     }, [])
@@ -89,6 +91,18 @@ export function AddTransaction() {
         setDate(date)
         setAmount(amount)
         setDescription(description)
+
+        for (const rule of rules) {
+            const re = new RegExp(rule.regex)
+            if (re.test(description.toLowerCase())) {
+                setTitle(rule.title)
+                const cat = categories.find(c => c.id === rule.category)
+                if (cat) {
+                    setCategory(cat)
+                }
+                return
+            }
+        }
     }, [fileEntries])
 
     return (
