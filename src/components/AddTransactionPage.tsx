@@ -103,7 +103,7 @@ export function AddTransaction() {
                 return
             }
         }
-    }, [fileEntries])
+    }, [fileEntries, categories, rules])
 
     return (
         <form onSubmit={handleSubmitTransaction}>

@@ -14,7 +14,7 @@ export function AuthListener() {
                 router.replace('/')
             }
         })
-    }, [])
+    }, [router])
 
     return <></>
 }

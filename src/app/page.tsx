@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export const dynamic = 'force-dynamic'
 
@@ -51,11 +52,7 @@ export default async function Hero() {
                 </div>
                 <div className='mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-32 lg:flex lg:px-8 lg:py-40'>
                     <div className='mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-xl lg:pt-8'>
-                        <img
-                            className='h-11'
-                            src='https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500'
-                            alt='Your Company'
-                        />
+                        <h1 className='text-3xl font-bold text-indigo-500'>Expenses Pro</h1>
                         <h1 className='mt-10 text-4xl font-bold tracking-tight text-white sm:text-6xl'>
                             Oversee and track your expenses with ease
                         </h1>
@@ -91,7 +88,7 @@ export default async function Hero() {
                     </div>
                     <div className='mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32'>
                         <div className='max-w-3xl flex-none sm:max-w-5xl lg:max-w-none'>
-                            <img
+                            <Image
                                 src='https://tailwindui.com/img/component-images/dark-project-app-screenshot.png'
                                 alt='App screenshot'
                                 width={2432}

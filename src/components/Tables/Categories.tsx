@@ -58,7 +58,7 @@ export function Categories() {
                 fetchData(user.uid)
             }
         })
-    }, [])
+    }, [query])
 
     const toggleSort = (input: CategorySort) => {
         const sort = query.get('sort')

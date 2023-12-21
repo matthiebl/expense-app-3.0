@@ -9,12 +9,8 @@ export function NavMenu({ desktop = false }: { desktop?: boolean }) {
 
     return (
         <>
-            <div className='flex h-16 shrink-0 items-center'>
-                <img
-                    className='h-8 w-auto'
-                    src='https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500'
-                    alt='Your Company'
-                />
+            <div className='flex h-16 shrink-0 items-end'>
+                <h1 className='text-3xl font-bold text-indigo-500'>Expenses Pro</h1>
             </div>
             <nav className='flex flex-1 flex-col'>
                 <ul role='list' className='flex flex-1 flex-col gap-y-7'>
