@@ -44,9 +44,9 @@ export const formatCSV = (
     }
     const headers = arrayLines[0]
     if (
-        headers.indexOf('date') < 0 ||
-        headers.indexOf('amount') < 0 ||
-        headers.indexOf('description') < 0
+        headers.indexOf('DATE') < 0 ||
+        headers.indexOf('AMOUNT') < 0 ||
+        headers.indexOf('DESCRIPTION') < 0
     ) {
         return []
     }
