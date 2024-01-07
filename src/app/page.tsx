@@ -1,10 +1,26 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '@/lib/firebase/auth'
+
 export const dynamic = 'force-dynamic'
 
-export default async function Hero() {
-    const authed = false
+export default function Hero() {
+    const [authed, setAuthed] = useState<boolean | null>(null)
+
+    useEffect(() => {
+        onAuthStateChanged(auth.fb, user => {
+            if (user) {
+                setAuthed(true)
+            } else {
+                setAuthed(false)
+            }
+        })
+    }, [])
 
     return (
         <div className='h-full bg-slate-900'>
@@ -61,29 +77,30 @@ export default async function Hero() {
                             place. No matter where you are, keep your expenses in track!
                         </p>
                         <div className='mt-10 flex items-center gap-x-6'>
-                            {authed ? (
-                                <Link
-                                    href='/dashboard'
-                                    className='rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400'
-                                >
-                                    Head to dashboard
-                                </Link>
-                            ) : (
-                                <>
+                            {authed !== null &&
+                                (authed ? (
                                     <Link
-                                        href='/login'
+                                        href='/dashboard'
                                         className='rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400'
                                     >
-                                        Log back in
+                                        Head to dashboard
                                     </Link>
-                                    <Link
-                                        href='/signup'
-                                        className='text-sm font-semibold leading-6 text-white'
-                                    >
-                                        Create an account <span aria-hidden='true'>→</span>
-                                    </Link>
-                                </>
-                            )}
+                                ) : (
+                                    <>
+                                        <Link
+                                            href='/login'
+                                            className='rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400'
+                                        >
+                                            Log in
+                                        </Link>
+                                        <Link
+                                            href='/signup'
+                                            className='text-sm font-semibold leading-6 text-white'
+                                        >
+                                            Create an account <span aria-hidden='true'>→</span>
+                                        </Link>
+                                    </>
+                                ))}
                         </div>
                     </div>
                     <div className='mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32'>

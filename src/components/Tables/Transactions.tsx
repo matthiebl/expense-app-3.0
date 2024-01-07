@@ -9,9 +9,9 @@ import { auth } from '@/lib/firebase/auth'
 
 const formatAmount = (value: number): string => {
     if (value < 0) {
-        return '-$' + Math.abs(value)
+        return '-$' + Math.abs(value).toFixed(2)
     }
-    return '$' + value
+    return '$' + value.toFixed(2)
 }
 
 export function Transactions() {
