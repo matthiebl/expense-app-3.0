@@ -7,7 +7,6 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '@/lib/firebase/auth'
 import { db } from '@/lib/firebase/database'
 import { toastSuccess } from '../Toasts'
-import { useRouter } from 'next/navigation'
 
 export function NewCategorySlide({
     open,

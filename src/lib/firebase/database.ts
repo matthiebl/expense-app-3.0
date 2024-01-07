@@ -206,6 +206,15 @@ class FireDB {
             createdAt: serverTimestamp(),
         })
     }
+
+    async editRule(id: string, title: string, regex: string, category: string) {
+        const ref = doc(this.fb, 'rules', id)
+        await updateDoc(ref, {
+            title,
+            regex,
+            category,
+        })
+    }
 }
 
 export const db = new FireDB(dbFB)

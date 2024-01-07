@@ -6,24 +6,30 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import { db } from '@/lib/firebase/database'
 import { toastSuccess } from '../Toasts'
 
-export function EditCategorySlide({
+type RuleEdit = {
+    title: string
+    regex: string
+    category: null
+}
+
+export function EditDataRuleSlide({
     open,
     setOpen,
     id,
-    title,
+    dataRule,
 }: {
     open: boolean
     setOpen: Dispatch<SetStateAction<boolean>>
     id: string
-    title: string
+    dataRule: RuleEdit
 }) {
-    const [category, setCategory] = useState(title)
+    const [rule, setRule] = useState(dataRule)
 
-    const hangleEditCategory = async (e: FormEvent<HTMLFormElement>) => {
+    const handleEditDataRule = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
-        await db.editCategory(id, category)
-        toastSuccess('Successfully changed category name')
+        await db.editRule(id, '', '', '')
+        toastSuccess('Successfully changed data rule')
         setOpen(false)
     }
 
@@ -46,14 +52,14 @@ export function EditCategorySlide({
                             >
                                 <Dialog.Panel className='pointer-events-auto w-screen max-w-md'>
                                     <form
-                                        onSubmit={hangleEditCategory}
+                                        onSubmit={handleEditDataRule}
                                         className='flex h-full flex-col divide-y divide-gray-200 bg-white shadow-xl'
                                     >
                                         <div className='h-0 flex-1 overflow-y-auto'>
                                             <div className='z-50 mt-14 bg-indigo-700 px-4 py-6 sm:px-6 lg:mt-0'>
                                                 <div className='flex items-center justify-between'>
                                                     <Dialog.Title className='text-base font-semibold leading-6 text-white'>
-                                                        Edit Category
+                                                        Edit Data Rule
                                                     </Dialog.Title>
                                                     <div className='ml-3 flex h-7 items-center'>
                                                         <button
@@ -74,7 +80,8 @@ export function EditCategorySlide({
                                                 </div>
                                                 <div className='mt-1'>
                                                     <p className='text-sm text-indigo-300'>
-                                                        Change the name of the category, {title}
+                                                        Edit the details of the data rule for{' '}
+                                                        {dataRule.title}
                                                     </p>
                                                 </div>
                                             </div>
@@ -83,7 +90,7 @@ export function EditCategorySlide({
                                                     <div className='space-y-6 pb-5 pt-6'>
                                                         <div>
                                                             <label
-                                                                htmlFor='category-name'
+                                                                htmlFor='rule-name'
                                                                 className='block text-sm font-medium leading-6 text-gray-900'
                                                             >
                                                                 Category name
@@ -91,12 +98,15 @@ export function EditCategorySlide({
                                                             <div className='mt-2'>
                                                                 <input
                                                                     type='text'
-                                                                    name='category-name'
-                                                                    id='category-name'
+                                                                    name='rule-name'
+                                                                    id='rule-name'
                                                                     required
-                                                                    value={category}
+                                                                    value={rule.title}
                                                                     onChange={e =>
-                                                                        setCategory(e.target.value)
+                                                                        setRule({
+                                                                            ...rule,
+                                                                            title: e.target.value,
+                                                                        })
                                                                     }
                                                                     pattern='[a-zA-Z ]{2,25}'
                                                                     className='block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'

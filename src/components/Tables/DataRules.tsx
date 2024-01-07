@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Rule, db } from '@/lib/firebase/database'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '@/lib/firebase/auth'
+import { DataRuleEditActions } from '../Dropdowns/DataRuleActions'
 
 const formatAmount = (value: number): string => {
     if (value < 0) {
@@ -92,13 +93,17 @@ export function DataRulesTable() {
                                 <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
                                     {t.regex}
                                 </td>
-                                <td className='relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8'>
+                                {/* <td className='relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8'>
                                     <Link
                                         href={`/rules/${t.id}`}
                                         className='text-indigo-600 hover:text-indigo-900'
                                     >
                                         Edit<span className='sr-only'>, {t.title}</span>
                                     </Link>
+                                </td> */}
+                                <td className='relative flex items-center justify-end py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8'>
+                                    <DataRuleEditActions id={t.id} category={t.category} />
+                                    <span className='sr-only'>Edit, {t.title}</span>
                                 </td>
                             </tr>
                         ))}
