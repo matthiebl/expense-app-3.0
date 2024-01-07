@@ -134,7 +134,11 @@ class FireDB {
     }
 
     transactions(uid: string, callback: (transactions: Transaction[]) => void) {
-        const q = query(collection(this.fb, 'transactions'), where('uid', '==', uid))
+        const q = query(
+            collection(this.fb, 'transactions'),
+            where('uid', '==', uid),
+            orderBy('date'),
+        )
         onSnapshot(q, snapshot => {
             const transactions: Transaction[] = []
             snapshot.forEach(doc => {
