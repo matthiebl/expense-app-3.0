@@ -9,6 +9,7 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "@dnd-kit/core": "^6.1.0",
         "@headlessui/react": "^1.7.17",
         "@heroicons/react": "^2.0.18",
         "@popperjs/core": "^2.11.8",

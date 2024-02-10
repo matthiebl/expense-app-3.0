@@ -8,7 +8,7 @@ export function Header({ title, action }: { title: string; action?: ReactNode })
                     {title}
                 </h2>
             </div>
-            {action && <div className='mt-4 flex md:ml-4 md:mt-0'>{action}</div>}
+            {action && <div className='mt-4 flex gap-2 md:ml-4 md:mt-0'>{action}</div>}
         </div>
     )
 }

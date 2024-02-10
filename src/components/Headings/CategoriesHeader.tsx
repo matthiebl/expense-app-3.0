@@ -3,8 +3,11 @@
 import { useState } from 'react'
 import { Header } from '.'
 import { NewCategorySlide } from '../Slideovers/NewCategory'
+import { PrimaryButton, SecondaryButton } from '../Buttons'
+import { useRouter } from 'next/navigation'
 
 export function CategoriesHeader() {
+    const router = useRouter()
     const [open, setOpen] = useState(false)
 
     return (
@@ -12,13 +15,14 @@ export function CategoriesHeader() {
             <Header
                 title='Categories'
                 action={
-                    <button
-                        type='button'
-                        onClick={() => setOpen(true)}
-                        className='inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
-                    >
-                        Add Category
-                    </button>
+                    <>
+                        <SecondaryButton
+                            onClick={() => router.push('/transactions/categories/spend')}
+                        >
+                            Spend Categories
+                        </SecondaryButton>
+                        <PrimaryButton onClick={() => setOpen(true)}>Add Category</PrimaryButton>
+                    </>
                 }
             />
             <NewCategorySlide open={open} setOpen={setOpen} />
