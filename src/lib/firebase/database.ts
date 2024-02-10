@@ -15,6 +15,7 @@ import {
     writeBatch,
 } from 'firebase/firestore'
 import { dbFB } from './config'
+import { Transaction, TransactionInput } from '@/models/transactions'
 
 export type Category = {
     id: string
@@ -27,26 +28,6 @@ export type Category = {
 type CategoryInput = {
     kind: 'Income' | 'Expense'
     category: string
-}
-
-export type Transaction = {
-    id: string
-    uid: string
-    title: string
-    description: string
-    amount: number
-    date: string
-    category: string
-    group: string
-    createdAt: Timestamp
-}
-
-type TransactionInput = {
-    title: string
-    description: string
-    category: string
-    amount: string
-    date: string
 }
 
 export type Rule = {
@@ -137,7 +118,7 @@ class FireDB {
         const q = query(
             collection(this.fb, 'transactions'),
             where('uid', '==', uid),
-            orderBy('date'),
+            orderBy('date', 'desc'),
         )
         onSnapshot(q, snapshot => {
             const transactions: Transaction[] = []
