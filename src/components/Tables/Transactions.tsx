@@ -1,53 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
-
-import { Transaction, db } from '@/lib/firebase/database'
-import { onAuthStateChanged } from 'firebase/auth'
-import { auth } from '@/lib/firebase/auth'
-
-const formatAmount = (value: number): string => {
-    if (value < 0) {
-        return '-$' + Math.abs(value).toFixed(2)
-    }
-    return '$' + value.toFixed(2)
-}
+import { useFetchTransactions } from '@/hooks/data/useFetchTransactions'
+import { getFeatureFlags } from '@/lib/flags'
 
 export function Transactions() {
-    const [transactions, setTransactions] = useState<(Transaction & { kind: string })[]>([])
-
-    useEffect(() => {
-        const fetchData = async (uid: string) => {
-            db.categories(uid, categories => {
-                const findCategories: Record<string, { kind: string; category: string }> = {}
-                categories.forEach(({ id, kind, category }) => {
-                    findCategories[id] = { kind, category }
-                })
-                db.transactions(uid, data => {
-                    const transactions = data.map(transaction => ({
-                        ...transaction,
-                        kind: findCategories[transaction.category].kind,
-                        category: findCategories[transaction.category].category,
-                    }))
-                    // const sort = query.get('sort')
-                    // const reversed = query.get('reversed')
-                    // if (sort === 'category' || sort === 'type') {
-                    //     data = sortCategories(data, sort)
-                    // }
-                    // if (reversed === 'true') {
-                    //     data.reverse()
-                    // }
-                    setTransactions(transactions)
-                })
-            })
-        }
-        onAuthStateChanged(auth.fb, user => {
-            if (user) {
-                fetchData(user.uid)
-            }
-        })
-    }, [])
+    const flags = getFeatureFlags()
+    const { transactions, formatAmount } = useFetchTransactions()
 
     return (
         <div className='-mx-4 -my-2 mt-8 overflow-x-auto sm:-mx-6 lg:-mx-8'>
@@ -79,12 +38,14 @@ export function Transactions() {
                             >
                                 Amount
                             </th>
-                            <th
-                                scope='col'
-                                className='px-3 py-3.5 text-left text-sm font-semibold text-gray-900'
-                            >
-                                Group
-                            </th>
+                            {flags.tags ? (
+                                <th
+                                    scope='col'
+                                    className='px-3 py-3.5 text-left text-sm font-semibold text-gray-900'
+                                >
+                                    Tag
+                                </th>
+                            ) : null}
                             <th
                                 scope='col'
                                 className='px-3 py-3.5 text-left text-sm font-semibold text-gray-900'
@@ -110,13 +71,13 @@ export function Transactions() {
                                 <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
                                     <span
                                         className={`${
-                                            t.kind === 'Income'
+                                            t.categoryKind === 'Income'
                                                 ? 'bg-green-50 text-green-800 ring-green-600/20'
                                                 : 'bg-red-50 text-red-800 ring-red-600/20'
                                         }
                                                                  mr-2 inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset`}
                                     >
-                                        {t.kind}
+                                        {t.categoryKind}
                                     </span>
                                 </td>
                                 <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
@@ -125,12 +86,14 @@ export function Transactions() {
                                 <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
                                     {formatAmount(t.amount)}
                                 </td>
-                                <td
-                                    data-no-group={t.group === ''}
-                                    className='whitespace-nowrap px-3 py-4 text-sm text-gray-500 data-[no-group=true]:text-gray-400'
-                                >
-                                    {t.group || 'No group'}
-                                </td>
+                                {flags.tags ? (
+                                    <td
+                                        data-no-tag={t.group === ''}
+                                        className='whitespace-nowrap px-3 py-4 text-sm text-gray-500 data-[no-tag=true]:text-gray-400'
+                                    >
+                                        {t.group || 'No tag'}
+                                    </td>
+                                ) : null}
                                 <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
                                     {t.date}
                                 </td>
