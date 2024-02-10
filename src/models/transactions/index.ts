@@ -20,16 +20,7 @@ export interface Transaction {
     createdAt: Timestamp
 }
 
-export type DecoratedTransaction = {
-    id: string
-    uid: string
-    title: string
-    description: string
-    amount: number
-    date: string
+export interface DecoratedTransaction extends Transaction {
     categoryId: string
-    category: string
     categoryKind: string
-    group: string
-    createdAt: Timestamp
 }

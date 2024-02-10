@@ -1,19 +1,18 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { onAuthStateChanged } from 'firebase/auth'
-import { Category, db } from '@/lib/firebase/database'
-import { auth } from '@/lib/firebase/auth'
 import { PlusIcon } from '@heroicons/react/24/outline'
 import { DefaultCategoriesModal } from '../Modals/DefaultCategories'
 import { CategoryEditActions } from '../Dropdowns/CategoryActions'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useFetchCategories } from '@/hooks/data/useFetchCategories'
+import { Category, CategorySort } from '@/models/categories'
+import { categorySorts } from '@/lib/sorts/categorySorts'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-type CategorySort = 'category' | 'type' | 'none'
 const sortCategories = (data: Category[], sort: CategorySort) => {
     let sorter = (a: Category, b: Category) => 0
     if (sort === 'category') {
@@ -36,39 +35,30 @@ const sortCategories = (data: Category[], sort: CategorySort) => {
 export function Categories() {
     const query = useSearchParams()
     const router = useRouter()
-    const [categories, setCategories] = useState<Category[]>([])
+
     const [open, setOpen] = useState(false)
 
-    useEffect(() => {
-        const fetchData = async (uid: string) => {
-            db.categories(uid, data => {
-                const sort = query.get('sort')
-                const reversed = query.get('reversed')
-                if (sort === 'category' || sort === 'type') {
-                    data = sortCategories(data, sort)
-                }
-                if (reversed === 'true') {
-                    data.reverse()
-                }
-                setCategories(data)
-            })
-        }
-        onAuthStateChanged(auth.fb, user => {
-            if (user) {
-                fetchData(user.uid)
-            }
-        })
-    }, [query])
+    const sort = query.get('sort')
+    const reversed = query.get('reversed')
+    const { sortByKind, sortByCategory } = categorySorts()
+
+    const { categories } = useFetchCategories()
+    const displayCategories = categories
+
+    if (sort === 'category') {
+        displayCategories.sort(sortByCategory)
+    } else if (sort === 'type') {
+        displayCategories.sort(sortByKind)
+    }
+    if (reversed === 'true') {
+        displayCategories.reverse()
+    }
 
     const toggleSort = (input: CategorySort) => {
-        const sort = query.get('sort')
-        const reversed = query.get('reversed')
         if (input === sort) {
             const newReversed = reversed === 'true' ? 'false' : 'true'
-            setCategories(categories.reverse())
             router.replace(`/transactions/categories?sort=${sort}&reversed=${newReversed}`)
         } else {
-            setCategories(sortCategories(categories, input))
             router.replace(`/transactions/categories?sort=${input}`)
         }
     }
@@ -133,7 +123,7 @@ export function Categories() {
                         </tr>
                     </thead>
                     <tbody className='divide-y divide-gray-200 bg-white'>
-                        {categories.map(category => (
+                        {displayCategories.map(category => (
                             <tr key={category.id}>
                                 <td className='whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8'>
                                     {category.category}
@@ -159,14 +149,14 @@ export function Categories() {
                                 </td>
                             </tr>
                         ))}
-                        {categories.length === 0 && (
+                        {displayCategories.length === 0 && (
                             <tr>
                                 <td></td>
                             </tr>
                         )}
                     </tbody>
                 </table>
-                {categories.length === 0 && (
+                {displayCategories.length === 0 && (
                     <div className='py-6 text-center'>
                         <svg
                             className='mx-auto h-12 w-12 text-gray-400'

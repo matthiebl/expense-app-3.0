@@ -1,5 +1,6 @@
 import { auth } from '@/lib/firebase/auth'
-import { Category, db } from '@/lib/firebase/database'
+import { db } from '@/lib/firebase/database'
+import { Category } from '@/models/categories'
 import { onAuthStateChanged } from 'firebase/auth'
 import { useEffect, useState } from 'react'
 

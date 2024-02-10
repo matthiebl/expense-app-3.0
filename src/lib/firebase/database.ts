@@ -16,19 +16,7 @@ import {
 } from 'firebase/firestore'
 import { dbFB } from './config'
 import { Transaction, TransactionInput } from '@/models/transactions'
-
-export type Category = {
-    id: string
-    uid: string
-    kind: 'Income' | 'Expense'
-    category: string
-    createdAt: Timestamp
-}
-
-type CategoryInput = {
-    kind: 'Income' | 'Expense'
-    category: string
-}
+import { Category, CategoryInput } from '@/models/categories'
 
 export type Rule = {
     id: string
