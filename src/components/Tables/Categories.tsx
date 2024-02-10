@@ -1,36 +1,18 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { PlusIcon } from '@heroicons/react/24/outline'
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid'
+
+import { categorySorts } from '@/lib/sorts/categorySorts'
+import { useFetchCategories } from '@/hooks/data/useFetchCategories'
 import { DefaultCategoriesModal } from '../Modals/DefaultCategories'
 import { CategoryEditActions } from '../Dropdowns/CategoryActions'
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useFetchCategories } from '@/hooks/data/useFetchCategories'
-import { Category, CategorySort } from '@/models/categories'
-import { categorySorts } from '@/lib/sorts/categorySorts'
+import { classNames } from '@/lib/classes'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
-
-const sortCategories = (data: Category[], sort: CategorySort) => {
-    let sorter = (a: Category, b: Category) => 0
-    if (sort === 'category') {
-        sorter = (a: Category, b: Category) => {
-            const titleA = a.category.toLowerCase()
-            const titleB = b.category.toLowerCase()
-            return titleA > titleB ? 1 : titleA < titleB ? -1 : 0
-        }
-    } else if (sort === 'type') {
-        sorter = (a: Category, b: Category) => {
-            const kindA = a.kind.toLowerCase()
-            const kindB = b.kind.toLowerCase()
-            return kindA > kindB ? -1 : kindA < kindB ? 1 : 0
-        }
-    }
-    const copy = [...data]
-    return copy.sort(sorter)
-}
 
 export function Categories() {
     const query = useSearchParams()
@@ -54,7 +36,7 @@ export function Categories() {
         displayCategories.reverse()
     }
 
-    const toggleSort = (input: CategorySort) => {
+    const toggleSort = (input: string) => {
         if (input === sort) {
             const newReversed = reversed === 'true' ? 'false' : 'true'
             router.replace(`/transactions/categories?sort=${sort}&reversed=${newReversed}`)
@@ -130,12 +112,12 @@ export function Categories() {
                                 </td>
                                 <td className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
                                     <span
-                                        className={`${
+                                        className={classNames(
                                             category.kind === 'Income'
                                                 ? 'bg-green-50 text-green-800 ring-green-600/20'
-                                                : 'bg-red-50 text-red-800 ring-red-600/20'
-                                        }
-                                                                 mr-2 inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset`}
+                                                : 'bg-red-50 text-red-800 ring-red-600/20',
+                                            'mr-2 inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset',
+                                        )}
                                     >
                                         {category.kind}
                                     </span>
