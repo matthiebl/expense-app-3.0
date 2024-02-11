@@ -1,3 +1,4 @@
+import { getFeatureFlags } from '@/lib/flags'
 import {
     DocumentIcon,
     DocumentDuplicateIcon,
@@ -12,5 +13,10 @@ export const navigation = [
     { name: 'Transactions', href: '/transactions', icon: DocumentIcon },
     { name: 'New Data', href: '/transactions/add', icon: DocumentDuplicateIcon },
     { name: 'Categories', href: '/transactions/categories', icon: FolderIcon },
-    { name: 'Groups', href: '/transactions/groups', icon: TagIcon },
+    { name: 'Tags', href: '/transactions/tags', icon: TagIcon },
 ]
+
+const flags = getFeatureFlags()
+if (!flags.tags) {
+    navigation.pop()
+}
