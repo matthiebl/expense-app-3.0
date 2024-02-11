@@ -19,6 +19,14 @@ export function SpendCategories() {
     const { categories } = useFetchCategories()
     initalSections['Uncategorised'] = categories
 
+    const dropCallback = (categoryId: string | null, spendCategory: string) => {
+        if (!categoryId) {
+            return
+        }
+
+        console.log('moved', categoryId, 'to', spendCategory)
+    }
+
     const {
         sections,
         activeItemId,
@@ -27,7 +35,7 @@ export function SpendCategories() {
         handleDragOver,
         handleDragEnd,
         dropAnimation,
-    } = useSortableLists(categories, initalSections)
+    } = useSortableLists(initalSections, dropCallback)
 
     const activeItem = activeItemId ? categories.find(item => item.id === activeItemId) : null
 
