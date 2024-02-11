@@ -17,8 +17,8 @@ export interface MinItem {
 }
 
 export const useSortableLists = <T extends MinItem>(
-    initialItems: T[],
     initialSections: Record<string, T[]>,
+    dropCallback?: (itemId: string | null, section: string) => any,
 ) => {
     const [sections, setSections] = useState(initialSections)
 
@@ -82,9 +82,10 @@ export const useSortableLists = <T extends MinItem>(
                 ...section,
                 [overContainer]: arrayMove(section[overContainer], activeIndex, overIndex),
             }))
+            if (dropCallback) {
+                dropCallback(activeItemId, overContainer)
+            }
         }
-
-        setActiveItemId(null)
     }
 
     const dropAnimation: DropAnimation = {
