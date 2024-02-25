@@ -43,6 +43,7 @@ class FireDB {
     }
 
     categories(uid: string, callback: (categories: Category[]) => void) {
+        console.log('[DB] Fetching categories from server')
         const q = query(collection(this.fb, 'categories'), where('uid', '==', uid))
         onSnapshot(q, snapshot => {
             const categories: Category[] = []
@@ -61,6 +62,7 @@ class FireDB {
     }
 
     async addCategory(uid: string, { kind, category }: CategoryInput) {
+        console.log('[DB] Creating category')
         await setDoc(doc(this.fb, 'categories', crypto.randomUUID()), {
             uid,
             kind,
@@ -70,6 +72,7 @@ class FireDB {
     }
 
     async addCategories(uid: string, categories: CategoryInput[]) {
+        console.log('[DB] Creating categories')
         const batch = writeBatch(this.fb)
         categories.forEach(({ kind, category }) => {
             const ref = doc(this.fb, 'categories', crypto.randomUUID())
@@ -84,6 +87,7 @@ class FireDB {
     }
 
     async editCategory(id: string, category: string) {
+        console.log('[DB] Editing category')
         const ref = doc(this.fb, 'categories', id)
         await updateDoc(ref, {
             category,
@@ -91,6 +95,7 @@ class FireDB {
     }
 
     async deleteCategory(id: string) {
+        console.log('[DB] Deleting category')
         const q = query(collection(this.fb, 'transactions'), where('category', '==', id))
         const existing = await getDocs(q)
         if (!existing.empty) {
@@ -103,6 +108,7 @@ class FireDB {
     }
 
     transactions(uid: string, callback: (transactions: Transaction[]) => void) {
+        console.log('[DB] Fetching transactions from server')
         const q = query(
             collection(this.fb, 'transactions'),
             where('uid', '==', uid),
@@ -132,6 +138,7 @@ class FireDB {
         uid: string,
         { title, description, category, amount, date }: TransactionInput,
     ) {
+        console.log('[DB] Creating transaction')
         const number = Number.parseFloat(amount)
         await setDoc(doc(this.fb, 'transactions', crypto.randomUUID()), {
             uid,
@@ -146,6 +153,7 @@ class FireDB {
     }
 
     rules(uid: string, callback: (rules: Rule[]) => void) {
+        console.log('[DB] Fetching data rules from server')
         const q = query(collection(this.fb, 'rules'), where('uid', '==', uid), orderBy('sortIndex'))
         onSnapshot(q, snapshot => {
             const rules: Rule[] = []
@@ -166,6 +174,7 @@ class FireDB {
     }
 
     async addRule(uid: string, { title, category, regex, sortIndex }: RuleInput) {
+        console.log('[DB] Creating data rule')
         await setDoc(doc(this.fb, 'rules', crypto.randomUUID()), {
             uid,
             title,
@@ -177,6 +186,7 @@ class FireDB {
     }
 
     async editRule(id: string, title: string, regex: string, category: string) {
+        console.log('[DB] Editing data rule')
         const ref = doc(this.fb, 'rules', id)
         await updateDoc(ref, {
             title,
