@@ -1,7 +1,7 @@
 'use client'
 
 import { DndContext, DragOverlay, closestCorners } from '@dnd-kit/core'
-import { useFetchCategories } from '@/hooks/data/useFetchCategories'
+import { useCategories } from '@/contexts/CategoryContext'
 import { useSortableLists } from '@/hooks/dnd/useSortableLists'
 import { Category } from '@/models/categories'
 import { Section } from './SpendSection'
@@ -16,7 +16,7 @@ const initalSections: Record<string, Category[]> = {
 }
 
 export function SpendCategories() {
-    const { categories } = useFetchCategories()
+    const { categories } = useCategories()
     initalSections['Uncategorised'] = categories
 
     const dropCallback = (categoryId: string | null, spendCategory: string) => {

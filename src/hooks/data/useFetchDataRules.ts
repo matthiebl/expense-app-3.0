@@ -1,18 +1,17 @@
 import { useEffect, useState } from 'react'
-import { db } from '@/lib/firebase/database'
+import { Rule, db } from '@/lib/firebase/database'
 import { useUserProfile } from '@/contexts/UserProfileContext'
-import { Category } from '@/models/categories'
 
-export interface CategoriesHook {
+export interface DataRuleHook {
     loading: boolean
-    categories: Category[]
+    dataRules: Rule[]
 }
 
-export const useFetchCategories = () => {
+export const useFetchDataRules = (): DataRuleHook => {
     const user = useUserProfile()
 
     const [loading, setLoading] = useState(true)
-    const [categories, setCategories] = useState<Category[]>([])
+    const [dataRules, setDataRules] = useState<Rule[]>([])
 
     useEffect(() => {
         if (user.loading) {
@@ -22,14 +21,14 @@ export const useFetchCategories = () => {
             setLoading(false)
             return
         }
-        db.categories(user.uid, data => {
-            setCategories(data)
+        db.rules(user.uid, data => {
+            setDataRules(data)
             setLoading(false)
         })
     }, [user])
 
     return {
         loading,
-        categories,
+        dataRules,
     }
 }

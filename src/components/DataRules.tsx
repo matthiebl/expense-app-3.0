@@ -1,43 +1,30 @@
 'use client'
 
-import { FormEvent, useEffect, useState } from 'react'
-import { onAuthStateChanged } from 'firebase/auth'
-import { auth } from '@/lib/firebase/auth'
-import { Rule, db } from '@/lib/firebase/database'
-import { CategorySelect, CategoryOption } from './Dropdowns/CategorySelect'
-import { CalendarIcon } from '@heroicons/react/20/solid'
+import { FormEvent, useState } from 'react'
+import { useUserProfile } from '@/contexts/UserProfileContext'
+import { useCategories } from '@/contexts/CategoryContext'
+import { useDataRules } from '@/contexts/DataRuleContext'
+import { db } from '@/lib/firebase/database'
+import { CategorySelect } from './Dropdowns/CategorySelect'
 import { toastError, toastSuccess } from './Toasts'
-import { TransactionFileDrop } from './TransactionFileDrop'
 import { Header } from './Headings'
 import { DataRulesTable } from './Tables/DataRules'
 
 export function DataRules() {
-    const [uid, setUID] = useState('')
+    const { uid } = useUserProfile()
+    const { dataRules } = useDataRules()
+    const { categories } = useCategories()
+    const categoryOptions = categories
+        .map(d => ({
+            id: d.id,
+            main: d.category,
+            secondary: d.kind,
+        }))
+        .sort((a, b) => (a.main > b.main ? 1 : -1))
+
     const [regex, setRegex] = useState('')
     const [title, setTitle] = useState('')
     const [category, setCategory] = useState({ id: '0', main: 'Select an option', secondary: '' })
-
-    const [categories, setCategories] = useState<CategoryOption[]>([])
-    const [rules, setRules] = useState<Rule[]>([])
-
-    useEffect(() => {
-        onAuthStateChanged(auth.fb, user => {
-            if (user) {
-                setUID(user.uid)
-                db.categories(user.uid, data => {
-                    const categories = data
-                        .map(d => ({
-                            id: d.id,
-                            main: d.category,
-                            secondary: d.kind,
-                        }))
-                        .sort((a, b) => (a.main > b.main ? 1 : -1))
-                    setCategories(categories)
-                })
-                db.rules(user.uid, data => setRules(data))
-            }
-        })
-    }, [])
 
     const handleClear = () => {
         setRegex('')
@@ -54,7 +41,7 @@ export function DataRules() {
             return
         }
 
-        db.addRule(uid, { title, category: category.id, regex, sortIndex: rules.length })
+        db.addRule(uid, { title, category: category.id, regex, sortIndex: dataRules.length })
         toastSuccess('Successfully created data rule', title)
         handleClear()
     }
@@ -121,7 +108,7 @@ export function DataRules() {
 
                     <div className='col-span-full'>
                         <CategorySelect
-                            options={categories}
+                            options={categoryOptions}
                             selected={category}
                             setSelected={setCategory}
                         />

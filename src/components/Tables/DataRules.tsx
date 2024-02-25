@@ -1,46 +1,22 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-
-import { Rule, db } from '@/lib/firebase/database'
-import { onAuthStateChanged } from 'firebase/auth'
-import { auth } from '@/lib/firebase/auth'
+import { useCategories } from '@/contexts/CategoryContext'
+import { useDataRules } from '@/contexts/DataRuleContext'
 import { DataRuleEditActions } from '../Dropdowns/DataRuleActions'
 
-const formatAmount = (value: number): string => {
-    if (value < 0) {
-        return '-$' + Math.abs(value)
-    }
-    return '$' + value
-}
-
 export function DataRulesTable() {
-    const [rules, setRules] = useState<(Rule & { kind: string })[]>([])
+    const { categories } = useCategories()
+    const findCategories: Record<string, { kind: string; category: string }> = {}
+    categories.forEach(({ id, kind, category }) => {
+        findCategories[id] = { kind, category }
+    })
 
-    useEffect(() => {
-        const fetchData = async (uid: string) => {
-            db.categories(uid, categories => {
-                const findCategories: Record<string, { kind: string; category: string }> = {}
-                categories.forEach(({ id, kind, category }) => {
-                    findCategories[id] = { kind, category }
-                })
-                db.rules(uid, data => {
-                    const rules = data.map(transaction => ({
-                        ...transaction,
-                        kind: findCategories[transaction.category].kind,
-                        category: findCategories[transaction.category].category,
-                    }))
-                    setRules(rules)
-                })
-            })
-        }
-        onAuthStateChanged(auth.fb, user => {
-            if (user) {
-                fetchData(user.uid)
-            }
-        })
-    }, [])
+    const { dataRules } = useDataRules()
+    const rules = dataRules.map(rule => ({
+        ...rule,
+        kind: findCategories[rule.category].kind,
+        category: findCategories[rule.category].category,
+    }))
 
     return (
         <div className='-mx-4 -my-2 mt-8 overflow-x-auto sm:-mx-6 lg:-mx-8'>

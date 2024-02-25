@@ -1,46 +1,36 @@
 'use client'
 
 import { FormEvent, useEffect, useState } from 'react'
-import { onAuthStateChanged } from 'firebase/auth'
-import { auth } from '@/lib/firebase/auth'
-import { Rule, db } from '@/lib/firebase/database'
-import { CategorySelect, CategoryOption } from './Dropdowns/CategorySelect'
 import { CalendarIcon } from '@heroicons/react/20/solid'
+import { db } from '@/lib/firebase/database'
+import { useUserProfile } from '@/contexts/UserProfileContext'
+import { useDataRules } from '@/contexts/DataRuleContext'
+import { useCategories } from '@/contexts/CategoryContext'
+import { CategorySelect } from './Dropdowns/CategorySelect'
 import { toastError, toastSuccess } from './Toasts'
 import { TransactionFileDrop } from './TransactionFileDrop'
 
 export function AddTransaction() {
-    const [uid, setUID] = useState('')
+    const { uid } = useUserProfile()
+    const { dataRules } = useDataRules()
+    const { categories } = useCategories()
+    const categoryOptions = categories
+        .map(d => ({
+            id: d.id,
+            main: d.category,
+            secondary: d.kind,
+        }))
+        .sort((a, b) => (a.main > b.main ? 1 : -1))
+
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [category, setCategory] = useState({ id: '0', main: 'Select an option', secondary: '' })
     const [amount, setAmount] = useState('')
     const [date, setDate] = useState('')
 
-    const [categories, setCategories] = useState<CategoryOption[]>([])
-    const [rules, setRules] = useState<Rule[]>([])
     const [fileEntries, setFileEntries] = useState<
         { date: string; amount: string; description: string }[]
     >([])
-
-    useEffect(() => {
-        onAuthStateChanged(auth.fb, user => {
-            if (user) {
-                setUID(user.uid)
-                db.categories(user.uid, data => {
-                    const categories = data
-                        .map(d => ({
-                            id: d.id,
-                            main: d.category,
-                            secondary: d.kind,
-                        }))
-                        .sort((a, b) => (a.main > b.main ? 1 : -1))
-                    setCategories(categories)
-                })
-                db.rules(user.uid, data => setRules(data))
-            }
-        })
-    }, [])
 
     const handleClear = () => {
         setTitle('')
@@ -92,18 +82,18 @@ export function AddTransaction() {
         setAmount(amount)
         setDescription(description)
 
-        for (const rule of rules) {
+        for (const rule of dataRules) {
             const re = new RegExp(rule.regex)
             if (re.test(description.toLowerCase())) {
                 setTitle(rule.title)
-                const cat = categories.find(c => c.id === rule.category)
+                const cat = categoryOptions.find(c => c.id === rule.category)
                 if (cat) {
                     setCategory(cat)
                 }
                 return
             }
         }
-    }, [fileEntries, categories, rules])
+    }, [fileEntries, categoryOptions, dataRules])
 
     return (
         <form onSubmit={handleSubmitTransaction}>
@@ -154,7 +144,7 @@ export function AddTransaction() {
 
                 <div className='col-span-full'>
                     <CategorySelect
-                        options={categories}
+                        options={categoryOptions}
                         selected={category}
                         setSelected={setCategory}
                     />
