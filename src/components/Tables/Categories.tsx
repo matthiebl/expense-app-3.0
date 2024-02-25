@@ -4,12 +4,12 @@ import { useState } from 'react'
 import { PlusIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid'
 
+import { classNames } from '@/lib/classes'
 import { categorySorts } from '@/lib/sorts/categorySorts'
-import { useFetchCategories } from '@/hooks/data/useFetchCategories'
+import { useCategories } from '@/contexts/CategoryContext'
 import { DefaultCategoriesModal } from '../Modals/DefaultCategories'
 import { CategoryEditActions } from '../Dropdowns/CategoryActions'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { classNames } from '@/lib/classes'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -24,7 +24,7 @@ export function Categories() {
     const reversed = query.get('reversed')
     const { sortByKind, sortByCategory } = categorySorts()
 
-    const { categories } = useFetchCategories()
+    const { categories } = useCategories()
     const displayCategories = categories
 
     if (sort === 'category') {

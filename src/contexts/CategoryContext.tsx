@@ -1,3 +1,5 @@
+'use client'
+
 import { CategoriesHook, useFetchCategories } from '@/hooks/data/useFetchCategories'
 import { ReactNode, createContext, useContext } from 'react'
 
