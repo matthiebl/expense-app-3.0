@@ -4,6 +4,11 @@ import { Category } from '@/models/categories'
 import { onAuthStateChanged } from 'firebase/auth'
 import { useEffect, useState } from 'react'
 
+export interface CategoriesHook {
+    loading: boolean
+    categories: Category[]
+}
+
 export const useFetchCategories = () => {
     const [loading, setLoading] = useState(true)
     const [categories, setCategories] = useState<Category[]>([])
