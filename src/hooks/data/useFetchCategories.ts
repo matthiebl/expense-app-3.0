@@ -1,8 +1,7 @@
-import { auth } from '@/lib/firebase/auth'
-import { db } from '@/lib/firebase/database'
-import { Category } from '@/models/categories'
-import { onAuthStateChanged } from 'firebase/auth'
 import { useEffect, useState } from 'react'
+import { db } from '@/lib/firebase/database'
+import { useUserProfile } from '@/contexts/UserProfileContext'
+import { Category } from '@/models/categories'
 
 export interface CategoriesHook {
     loading: boolean
@@ -10,21 +9,24 @@ export interface CategoriesHook {
 }
 
 export const useFetchCategories = () => {
+    const user = useUserProfile()
+
     const [loading, setLoading] = useState(true)
     const [categories, setCategories] = useState<Category[]>([])
 
     useEffect(() => {
-        onAuthStateChanged(auth.fb, user => {
-            if (!user) {
-                setLoading(false)
-                return
-            }
-            db.categories(user.uid, data => {
-                setCategories(data)
-                setLoading(false)
-            })
+        if (user.loading) {
+            return
+        }
+        if (!user.uid) {
+            setLoading(false)
+            return
+        }
+        db.categories(user.uid, data => {
+            setCategories(data)
+            setLoading(false)
         })
-    }, [])
+    }, [user])
 
     return {
         loading,
